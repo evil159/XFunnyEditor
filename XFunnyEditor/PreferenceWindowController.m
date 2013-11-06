@@ -37,7 +37,7 @@
 
     [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger resultCode){
         if (resultCode == NSOKButton) {
-            NSURL *pathURL = [[openPanel URLs] objectAtIndex:0];
+            NSURL *pathURL = [openPanel URLs][0];
             NSString *imagePath = [pathURL path];
             
             [self.textFile setStringValue:imagePath];
@@ -61,21 +61,66 @@
 
 - (IBAction)onEnablePictureTimer:(NSButton *)sender {
     [self.timerValue setEnabled:sender.state];
-    [self.randomOrder setEnabled:sender.state];
+    [self.timeStepper setEnabled:sender.state];
+    [self.timeRangeSelector setEnabled:sender.state];
+    // disabled temporarly
+//    [self.randomOrder setEnabled:sender.state];
     if (sender.state == 0) {
         [self.delegate selectedTimeInterval:0.f];
-    } else {
-        [self.timerValue setStringValue:@"0"];
+        [self.timerValue setDoubleValue:0.f];
         [self.randomOrder setState:0];
     }
 }
 
 - (IBAction)onSetTimerValue:(NSTextField *)sender {
-    [self.delegate selectedTimeInterval:sender.doubleValue];
+    NSUInteger index = [self.timeRangeSelector indexOfSelectedItem];
+    
+    [self.delegate selectedTimeInterval:[sender doubleValue] * [self timeMultiplierForIndex:index]];
 }
 
 - (IBAction)onSetRandomOrder:(NSButton *)sender {
     [self.delegate selectedRandomOrder:sender.state];
+}
+
+- (IBAction)onSelectTimeUnits:(NSPopUpButton *)sender {
+    CGFloat timerValue = [self.timerValue floatValue];
+    NSUInteger index = [sender indexOfSelectedItem];
+    [self.delegate selectedTimeInterval:timerValue * [self timeMultiplierForIndex:index]];
+}
+
+- (IBAction)onChangeTimerValue:(NSStepper *)sender {
+    CGFloat currentTime = [self.timerValue doubleValue];
+    CGFloat stepperValue = [sender doubleValue];
+
+    currentTime += stepperValue;
+    currentTime = MAX(0, currentTime);
+    [self.timerValue setDoubleValue:currentTime];
+    [sender setDoubleValue:0.f];
+}
+
+- (IBAction)checkAndNotifyDelegateOnSize:(NSTextField *)sender {
+    NSSize imageSize = NSMakeSize([self.imageWidth doubleValue], [self.imageHeight doubleValue]);
+    if (imageSize.width && imageSize.height) {
+        [self.delegate selectedImageSize:imageSize];
+    }
+}
+
+#pragma mark -
+#pragma mark Private
+
+- (CGFloat)timeMultiplierForIndex:(NSUInteger)index {
+    switch (index) {
+        case 0:
+            return 1.f;
+        case 1:
+            return 60.f;
+        case 2:
+            return 60.f * 60.f;
+        case 3:
+            return 60.f * 60.f * 24.f;
+        default:
+            return 0;
+    }
 }
 
 @end

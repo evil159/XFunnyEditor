@@ -16,6 +16,7 @@
 - (void)selectedOpacity:(float)opacity;
 - (void)selectedTimeInterval:(NSTimeInterval)interval;
 - (void)selectedRandomOrder:(BOOL)random;
+- (void)selectedImageSize:(NSSize)size;
 
 @end
 
@@ -30,6 +31,10 @@
 @property (assign) IBOutlet NSButton *pictureTimerBox;
 @property (assign) IBOutlet NSTextField *timerValue;
 @property (assign) IBOutlet NSButton *randomOrder;
+@property (assign) IBOutlet NSPopUpButton *timeRangeSelector;
+@property (assign) IBOutlet NSStepper *timeStepper;
+@property (assign) IBOutlet NSTextField *imageWidth;
+@property (assign) IBOutlet NSTextField *imageHeight;
 
 - (IBAction)clickFile:(id)sender;
 - (IBAction)changePosition:(id)sender;
@@ -37,5 +42,8 @@
 - (IBAction)onEnablePictureTimer:(NSButton *)sender;
 - (IBAction)onSetTimerValue:(NSTextField *)sender;
 - (IBAction)onSetRandomOrder:(NSButton *)sender;
+- (IBAction)onSelectTimeUnits:(NSPopUpButton *)sender;
+- (IBAction)onChangeTimerValue:(NSStepper *)sender;
+- (IBAction)checkAndNotifyDelegateOnSize:(id)sender;
 
 @end
