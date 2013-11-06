@@ -5,34 +5,34 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>DCA8DEB6-DFA2-4749-BB12-7575AC94CFD8</string>
+	<string>11ECF96D-45E7-42E6-AD2C-16F4CAB7FE3F</string>
 	<key>IDESourceControlProjectName</key>
 	<string>XFunnyEditor</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>648F5D32-AC07-4FCC-A1F0-17DD04A4B81F</key>
-		<string>https://github.com/STAR-ZERO/XFunnyEditor</string>
+		<key>150528F7-0FB6-4749-BC4A-059818876A73</key>
+		<string>https://github.com/evil159/XFunnyEditor.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>XFunnyEditor.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>648F5D32-AC07-4FCC-A1F0-17DD04A4B81F</key>
+		<key>150528F7-0FB6-4749-BC4A-059818876A73</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/STAR-ZERO/XFunnyEditor</string>
+	<string>https://github.com/evil159/XFunnyEditor.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>648F5D32-AC07-4FCC-A1F0-17DD04A4B81F</string>
+	<string>150528F7-0FB6-4749-BC4A-059818876A73</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>648F5D32-AC07-4FCC-A1F0-17DD04A4B81F</string>
+			<string>150528F7-0FB6-4749-BC4A-059818876A73</string>
 			<key>IDESourceControlWCCName</key>
 			<string>XFunnyEditor</string>
 		</dict>
