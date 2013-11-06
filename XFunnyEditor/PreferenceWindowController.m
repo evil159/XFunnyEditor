@@ -14,21 +14,6 @@
 
 @implementation PreferenceWindowController
 
-- (id)initWithWindow:(NSWindow *)window
-{
-    self = [super initWithWindow:window];
-    if (self) {
-        // Initialization code here.
-    }
-    return self;
-}
-
-- (void)windowDidLoad
-{
-    [super windowDidLoad];
-    
-}
-
 - (void)windowWillClose:(NSNotification *)notification
 {
     int result = 1;
@@ -39,11 +24,14 @@
     [[NSApplication sharedApplication] stopModalWithCode:result];
 }
 
+#pragma mark -
+#pragma mark Actions
+
 - (IBAction)clickFile:(id)sender {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     NSArray *fileTypes = [[[NSArray alloc] initWithObjects:@"png", @"jpg", @"jpeg", nil] autorelease];
 
-    [openPanel setCanChooseDirectories:NO];
+    [openPanel setCanChooseDirectories:YES];
     [openPanel setCanChooseFiles:YES];
     [openPanel setAllowedFileTypes:fileTypes];
 
@@ -60,7 +48,7 @@
 }
 
 - (IBAction)changePosition:(id)sender {
-    NSInteger index = [self.comboPosition indexOfSelectedItem];
+    NSInteger index = [self.imagePosition indexOfSelectedItem];
     [self.delegate selectedPosition:index];
 }
 
@@ -69,6 +57,25 @@
     [self.labelOpacity setStringValue:[NSString stringWithFormat:@"%ld", opacity]];
     
     [self.delegate selectedOpacity:opacity / 100.0];
+}
+
+- (IBAction)onEnablePictureTimer:(NSButton *)sender {
+    [self.timerValue setEnabled:sender.state];
+    [self.randomOrder setEnabled:sender.state];
+    if (sender.state == 0) {
+        [self.delegate selectedTimeInterval:0.f];
+    } else {
+        [self.timerValue setStringValue:@"0"];
+        [self.randomOrder setState:0];
+    }
+}
+
+- (IBAction)onSetTimerValue:(NSTextField *)sender {
+    [self.delegate selectedTimeInterval:sender.doubleValue];
+}
+
+- (IBAction)onSetRandomOrder:(NSButton *)sender {
+    [self.delegate selectedRandomOrder:sender.state];
 }
 
 @end

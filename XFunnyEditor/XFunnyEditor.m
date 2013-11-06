@@ -8,7 +8,14 @@
 
 #import "XFunnyEditor.h"
 
+static NSString * const kUserDefaultsKeyImagePath = @"XFunnyEditoryImagePath";
+static NSString * const kUserDefaultsKeyImagePosition = @"XFunnyEditoryImagePosition";
+static NSString * const kUserDefaultsKeyImageOpcity = @"XFunnyEditoryImageOpacity";
+
 @interface XFunnyEditor()
+
+@property (nonatomic, retain) NSTimer *timer;
+
 @end
 
 @implementation XFunnyEditor
@@ -22,9 +29,10 @@
     NSColor *_originalColor;
 }
 
-NSString * const kUserDefaultsKeyImagePath = @"XFunnyEditoryImagePath";
-NSString * const kUserDefaultsKeyImagePosition = @"XFunnyEditoryImagePosition";
-NSString * const kUserDefaultsKeyImageOpcity = @"XFunnyEditoryImageOpacity";
+@synthesize timer = _timer;
+
+#pragma mark -
+#pragma mark Class Methods
 
 + (void)pluginDidLoad:(NSBundle *)plugin
 {
@@ -36,17 +44,19 @@ NSString * const kUserDefaultsKeyImageOpcity = @"XFunnyEditoryImageOpacity";
     });
 }
 
+#pragma mark -
+#pragma mark Initializations
+
 - (id)init
 {
     if (self = [super init]) {
-
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
         NSString *imagePath = [userDefaults objectForKey:kUserDefaultsKeyImagePath];
         
         if (imagePath) {
-            NSFileManager *fileManager = [NSFileManager defaultManager];
-            if ([fileManager fileExistsAtPath:imagePath]) {
-                _image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+            NSString *path = [self imagePathForSelectedPath:imagePath];
+            if (path) {
+                _image = [[NSImage alloc] initWithContentsOfFile:path];
             } else {
                 [self removeUserDefaults];
             }
@@ -92,6 +102,21 @@ NSString * const kUserDefaultsKeyImageOpcity = @"XFunnyEditoryImageOpacity";
                                              selector:@selector(viewFrameDidChangeNotification:)
                                                  name:NSViewFrameDidChangeNotification
                                                object:nil];
+}
+
+#pragma mark -
+#pragma mark Accessors
+
+- (void)setTimer:(NSTimer *)timer {
+    if (_timer != timer) {
+        [_timer invalidate];
+        [_timer release];
+        _timer = [timer retain];
+        // try to save some power on OS X 10.9 and above
+        if ([_timer respondsToSelector:@selector(setTolerance:)]) {
+            _timer.tolerance = _timer.timeInterval * 0.1f;
+        }
+    }
 }
 
 - (void)viewFrameDidChangeNotification:(NSNotification *)notification
@@ -248,7 +273,6 @@ NSString * const kUserDefaultsKeyImageOpcity = @"XFunnyEditoryImageOpacity";
         _preferenceWindow.delegate = self;
     }
     [_preferenceWindow.textFile setStringValue:@""];
-    [_preferenceWindow.comboPosition selectItemAtIndex:0];
     [_preferenceWindow.sliderOpacity setIntValue:100];
     [_preferenceWindow.labelOpacity setStringValue:@"100"];
     
@@ -278,9 +302,21 @@ NSString * const kUserDefaultsKeyImageOpcity = @"XFunnyEditoryImageOpacity";
     
 }
 
+#pragma mark -
+#pragma mark PreferenceDelegate Methods
+
+- (void)selectedTimeInterval:(NSTimeInterval)interval {
+    
+}
+
+- (void)selectedRandomOrder:(BOOL)random {
+    
+}
+
 - (void)selectedImageFile:(NSString *)imagePath
 {
-    _image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+    NSString *path = [self imagePathForSelectedPath:imagePath];
+    _image = [[NSImage alloc] initWithContentsOfFile:path];
     if (_currentTextView) {
         // post notification
         [[NSNotificationCenter defaultCenter] postNotificationName:NSViewFrameDidChangeNotification object:_currentTextView];
@@ -305,8 +341,43 @@ NSString * const kUserDefaultsKeyImageOpcity = @"XFunnyEditoryImageOpacity";
     }
 }
 
+#pragma mark -
+#pragma mark Private
+
+- (NSString *)imagePathForSelectedPath:(NSString *)path
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL isDirectory = NO;
+    if ([fileManager fileExistsAtPath:path isDirectory:&isDirectory]) {
+        if (isDirectory) {
+            NSError *error;
+            NSArray *contents = [fileManager contentsOfDirectoryAtURL:[NSURL fileURLWithPath:path]
+                                      includingPropertiesForKeys:@[NSURLTypeIdentifierKey]
+                                                         options:NSDirectoryEnumerationSkipsHiddenFiles
+                                                           error:&error];
+            NSMutableArray *res = [NSMutableArray array];
+            for (NSURL *f in contents) {
+                NSString *s = nil;
+                if ([f getResourceValue:&s forKey:NSURLTypeIdentifierKey error:nil]) {
+                    if ([s isEqualToString:@"public.jpeg"] || [s isEqualToString:@"public.png"]) {
+                        [res addObject:[f path]];
+                    }
+                }
+            }
+            return res[arc4random() % [res count]];
+        } else {
+            return path;
+        }
+    }
+    return nil;
+}
+
+#pragma mark -
+#pragma mark Deallocations
+
 - (void)dealloc
 {
+    self.timer = nil;
     [_image release];
     [_currentTextView release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
